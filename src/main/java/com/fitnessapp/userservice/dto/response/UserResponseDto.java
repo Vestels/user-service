@@ -4,10 +4,8 @@ import com.fitnessapp.userservice.entity.UserEntity;
 import com.fitnessapp.userservice.enums.UserStatus;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public record UserResponseDto(
-        UUID publicId,
         String email,
         UserStatus userStatus,
         Instant createdAt,
@@ -20,7 +18,6 @@ public record UserResponseDto(
 
     public static UserResponseDto from(UserEntity user) {
         return new UserResponseDto(
-                user.getPublicId(),
                 user.getEmail(),
                 user.getStatus(),
                 user.getCreatedAt(),

@@ -5,10 +5,7 @@ import com.fitnessapp.userservice.enums.Language;
 import com.fitnessapp.userservice.enums.Theme;
 import com.fitnessapp.userservice.enums.UnitSystem;
 
-import java.util.UUID;
-
 public record UserPreferencesResponseDto(
-        UUID userId,
         Language language,
         UnitSystem unitSystem,
         Theme theme,
@@ -19,7 +16,6 @@ public record UserPreferencesResponseDto(
 
     public static UserPreferencesResponseDto from(UserPreferencesEntity userPreferences) {
         return new UserPreferencesResponseDto(
-                userPreferences.getUserId(),
                 userPreferences.getLanguage(),
                 userPreferences.getUnitSystem(),
                 userPreferences.getTheme(),
