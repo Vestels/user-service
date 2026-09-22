@@ -9,7 +9,6 @@ public record UserPreferencesResponseDto(
         Language language,
         UnitSystem unitSystem,
         Theme theme,
-        String timezone,
         boolean emailNotifications,
         boolean pushNotifications
 ) {
@@ -19,7 +18,6 @@ public record UserPreferencesResponseDto(
                 userPreferences.getLanguage(),
                 userPreferences.getUnitSystem(),
                 userPreferences.getTheme(),
-                userPreferences.getTimezone(),
                 userPreferences.isEmailNotifications(),
                 userPreferences.isPushNotifications()
         );

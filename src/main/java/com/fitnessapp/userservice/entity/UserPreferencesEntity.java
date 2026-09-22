@@ -33,10 +33,6 @@ public class UserPreferencesEntity {
     private UnitSystem unitSystem;
 
     @Setter
-    @Column(nullable = false)
-    private String timezone;
-
-    @Setter
     private boolean emailNotifications;
 
     @Setter
@@ -53,6 +49,5 @@ public class UserPreferencesEntity {
         this.theme = Theme.LIGHT;
         this.emailNotifications = false;
         this.pushNotifications = false;
-        this.timezone = "Europe/Budapest";
     }
 }

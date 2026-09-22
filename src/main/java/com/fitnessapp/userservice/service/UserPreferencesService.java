@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DateTimeException;
-import java.time.ZoneId;
 import java.util.UUID;
 
 @Service
@@ -27,16 +25,5 @@ public class UserPreferencesService {
     @Transactional
     public void saveUserPreferences(UserPreferencesEntity userPreferences) {
         userPreferencesRepository.save(userPreferences);
-    }
-
-    @Transactional
-    public void updateTimezone(UserPreferencesEntity userPreferences, String timezone) {
-        try {
-            ZoneId.of(timezone);
-        } catch (DateTimeException e) {
-            throw new IllegalArgumentException("Invalid timezone: " + timezone, e);
-        }
-
-        userPreferences.setTimezone(timezone);
     }
 }
