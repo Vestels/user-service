@@ -30,9 +30,7 @@ public class UserProfileController {
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public void updateUserProfile(@Valid @RequestBody UpdateUserProfileRequestDto request, Authentication authentication) {
-        if (request.isEmpty()) {
-            throw new BadRequestException("At least one field must be provided.");
-        }
+        if (request.isEmpty()) throw new BadRequestException("At least one field must be provided.");
 
         userProfileService.updateUserprofile(
                 request,

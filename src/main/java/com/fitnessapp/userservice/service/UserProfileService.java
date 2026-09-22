@@ -20,7 +20,8 @@ public class UserProfileService {
     @Transactional(readOnly = true)
     public UserProfileResponseDto getUserProfile(UUID userId) {
         return UserProfileResponseDto.from(userProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserProfileNotFoundException("User profile not found.")));
+                .orElseThrow(() -> new UserProfileNotFoundException("User profile not found."))
+        );
     }
 
     @Transactional
@@ -29,8 +30,8 @@ public class UserProfileService {
     }
 
     @Transactional
-    public void updateUserprofile(UpdateUserProfileRequestDto request, UUID userId) {
-        this.saveUserProfile(request.updateEntity(userProfileRepository.findByUserId(userId)
+    public void updateUserprofile(UpdateUserProfileRequestDto user, UUID userId) {
+        this.saveUserProfile(user.updateEntity(userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserProfileNotFoundException("User profile not found.")))
         );
     }
