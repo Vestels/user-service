@@ -1,16 +1,15 @@
 package com.fitnessapp.userservice.controller;
 
+import com.fitnessapp.userservice.dto.request.UpdateUserProfileRequestDto;
 import com.fitnessapp.userservice.dto.response.UserProfileResponseDto;
-import com.fitnessapp.userservice.entity.UserEntity;
+import com.fitnessapp.userservice.exception.BadRequestException;
 import com.fitnessapp.userservice.service.UserProfileService;
 import com.fitnessapp.userservice.service.support.AuthenticateService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,8 +22,21 @@ public class UserProfileController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public UserProfileResponseDto getUserProfile(Authentication authentication) {
-        UserEntity user = authenticateService.getUserByAuthenticatedIdentity(authentication);
+        return userProfileService.getUserProfile(
+                authenticateService.getUserByAuthenticatedIdentity(authentication).getPublicId()
+        );
+    }
 
-        return userProfileService.getUserProfile(user.getPublicId());
+    @PatchMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void updateUserProfile(@Valid @RequestBody UpdateUserProfileRequestDto request, Authentication authentication) {
+        if (request.isEmpty()) {
+            throw new BadRequestException("At least one field must be provided.");
+        }
+
+        userProfileService.updateUserprofile(
+                request,
+                authenticateService.getAuthenticatedUserPublicId(authentication)
+        );
     }
 }

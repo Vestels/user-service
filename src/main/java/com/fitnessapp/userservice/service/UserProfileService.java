@@ -1,5 +1,6 @@
 package com.fitnessapp.userservice.service;
 
+import com.fitnessapp.userservice.dto.request.UpdateUserProfileRequestDto;
 import com.fitnessapp.userservice.dto.response.UserProfileResponseDto;
 import com.fitnessapp.userservice.entity.UserProfileEntity;
 import com.fitnessapp.userservice.exception.UserProfileNotFoundException;
@@ -17,13 +18,20 @@ public class UserProfileService {
     private final UserProfileRepository userProfileRepository;
 
     @Transactional(readOnly = true)
-    public UserProfileResponseDto getUserProfile(UUID publicId) {
-        return UserProfileResponseDto.from(userProfileRepository.findByUserId(publicId)
+    public UserProfileResponseDto getUserProfile(UUID userId) {
+        return UserProfileResponseDto.from(userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserProfileNotFoundException("User profile not found.")));
     }
 
     @Transactional
     public void saveUserProfile(UserProfileEntity userProfile) {
         userProfileRepository.save(userProfile);
+    }
+
+    @Transactional
+    public void updateUserprofile(UpdateUserProfileRequestDto request, UUID userId) {
+        this.saveUserProfile(request.updateEntity(userProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserProfileNotFoundException("User profile not found.")))
+        );
     }
 }
