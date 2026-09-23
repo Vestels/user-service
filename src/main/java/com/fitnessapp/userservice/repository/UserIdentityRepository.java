@@ -12,5 +12,7 @@ import java.util.UUID;
 @Repository
 public interface UserIdentityRepository extends JpaRepository<UserIdentityEntity, Long> {
     Optional<UserIdentityEntity> findByProviderAndSubject(IdentityProvider provider, String subject);
+    Optional<UserIdentityEntity> findByUserId(UUID userId);
     List<UserIdentityEntity> findAllByUserId(UUID userId);
+    void deleteByUserId(UUID userId);
 }

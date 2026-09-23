@@ -2,13 +2,13 @@ package com.fitnessapp.userservice.service.support;
 
 import com.fitnessapp.userservice.dto.response.UserResponseDto;
 import com.fitnessapp.userservice.dto.security.AuthenticatedUserDto;
-import com.fitnessapp.userservice.entity.UserIdentityEntity;
 import com.fitnessapp.userservice.entity.UserEntity;
+import com.fitnessapp.userservice.entity.UserIdentityEntity;
 import com.fitnessapp.userservice.entity.UserPreferencesEntity;
 import com.fitnessapp.userservice.entity.UserProfileEntity;
 import com.fitnessapp.userservice.enums.IdentityProvider;
 import com.fitnessapp.userservice.exception.AccountLinkRequiredException;
-import com.fitnessapp.userservice.exception.UserNotFoundException;
+import com.fitnessapp.userservice.exception.Auth0UserNotFoundException;
 import com.fitnessapp.userservice.service.UserIdentityService;
 import com.fitnessapp.userservice.service.UserPreferencesService;
 import com.fitnessapp.userservice.service.UserProfileService;
@@ -26,23 +26,26 @@ public class UserProvisioningService {
     private final UserPreferencesService userPreferencesService;
     private final UserIdentityService userIdentityService;
     private final UserService userService;
+    private final Auth0ManagementService auth0ManagementService;
+    private final AuthenticateService authenticateService;
 
     @Transactional
     public UserResponseDto getOrProvisionUser(Authentication authentication) {
 
         AuthenticatedUserDto authenticatedUser = AuthenticatedUserDto.from(authentication);
-
-        UserIdentityEntity identity = userIdentityService.getAuthenticatedUserIdentityProvider(
-                IdentityProvider.valueOf(authenticatedUser.provider()), authenticatedUser.subject());
+        UserIdentityEntity identity = authenticateService.getAuthenticatedIdentity(authentication).orElse(null);
 
         if (identity != null) {
-            return UserResponseDto.from(userService.findByPublicId(identity.getUserId())
-                    .orElseThrow(() -> new UserNotFoundException("User not found.")));
+            return UserResponseDto.from(userService.findByPublicId(identity.getUserId()));
         }
 
         if (userService.findByEmail(authenticatedUser.email()).isPresent()) {
             throw new AccountLinkRequiredException(
                     "An account with this email already exists. Account linking is required.");
+        }
+
+        if (!auth0ManagementService.userExists(authenticatedUser.subject())) {
+            throw new Auth0UserNotFoundException("This Account has been deleted.");
         }
 
         return createUser(

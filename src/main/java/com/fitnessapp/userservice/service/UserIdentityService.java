@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -18,8 +19,8 @@ public class UserIdentityService {
     private final UserIdentityRepository userIdentityRepository;
 
     @Transactional(readOnly = true)
-    public UserIdentityEntity getAuthenticatedUserIdentityProvider(IdentityProvider provider, String subject) {
-        return userIdentityRepository.findByProviderAndSubject(provider, subject).orElse(null);
+    public Optional<UserIdentityEntity> getAuthenticatedUserIdentityProvider(IdentityProvider provider, String subject) {
+        return userIdentityRepository.findByProviderAndSubject(provider, subject);
     }
 
     @Transactional(readOnly = true)
@@ -28,6 +29,11 @@ public class UserIdentityService {
                 .stream()
                 .map(UserIdentityResponseDto::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<UserIdentityEntity> findByUserId(UUID userId) {
+        return userIdentityRepository.findByUserId(userId);
     }
 
     @Transactional

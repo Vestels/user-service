@@ -70,4 +70,22 @@ public class UserEntity {
             this.lastActivityAt = now;
         }
     }
+
+    public void startDeletion() {
+        this.status = UserStatus.DELETING;
+    }
+
+    public void setScheduledDeletion() {
+        this.status = UserStatus.PENDING_DELETION;
+        this.deletionRequestAt = Instant.now();
+
+//        TODO - change to plus 30 days later
+        this.scheduledDeletionAt = this.deletionRequestAt.plus(5, ChronoUnit.MINUTES);
+    }
+
+    public void clearScheduledDeletion() {
+        this.status = UserStatus.ACTIVE;
+        this.deletionRequestAt = null;
+        this.scheduledDeletionAt = null;
+    }
 }

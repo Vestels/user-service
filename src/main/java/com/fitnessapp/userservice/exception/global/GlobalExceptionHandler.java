@@ -63,6 +63,16 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(Auth0UserNotFoundException.class)
+    public ResponseEntity<ApiErrorDto> handleIllegalArgument(Auth0UserNotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.GONE)
+                .body(new ApiErrorDto(
+                        "NOT_FOUND",
+                        exception.getMessage()
+                ));
+    }
+
     @ExceptionHandler(AccountLinkRequiredException.class)
     public ResponseEntity<ApiErrorDto> handleAccountLinkRequired(AccountLinkRequiredException exception) {
         return ResponseEntity
@@ -99,6 +109,16 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ApiErrorDto(
                         "USER_PREFERENCES_NOT_FOUND",
+                        exception.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(UserIdentityNotFoundException.class)
+    public ResponseEntity<ApiErrorDto> handleUserIdentityNotFound(UserIdentityNotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ApiErrorDto(
+                        "USER_IDENTITY_NOT_FOUND",
                         exception.getMessage()
                 ));
     }

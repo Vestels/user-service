@@ -12,6 +12,7 @@ public record UpdateUserPreferencesRequestDto(
         Boolean emailNotifications,
         Boolean pushNotifications
 ) {
+
     public boolean isEmpty() {
         return language == null &&
                 unitSystem == null &&

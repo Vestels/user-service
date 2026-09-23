@@ -34,7 +34,7 @@ public class UserProfileController {
 
         userProfileService.updateUserprofile(
                 request,
-                authenticateService.getAuthenticatedUserPublicId(authentication)
+                authenticateService.requireAuthenticatedUserPublicId(authentication)
         );
     }
 }

@@ -1,6 +1,4 @@
-package com.fitnessapp.userservice.dto.response;
-
-import com.fitnessapp.userservice.dto.security.Auth0UserInfoDto;
+package com.fitnessapp.userservice.dto.security;
 
 public record Auth0UserResponseDto(
         String picture,

@@ -1,6 +1,5 @@
 package com.fitnessapp.userservice.config.filter;
 
-import com.fitnessapp.userservice.entity.UserEntity;
 import com.fitnessapp.userservice.service.UserService;
 import com.fitnessapp.userservice.service.support.AuthenticateService;
 import jakarta.servlet.FilterChain;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -27,14 +27,12 @@ public class ActivityTrackingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
-                throws ServletException, IOException {
+            throws ServletException, IOException {
 
         if (SecurityContextHolder.getContext().getAuthentication() instanceof JwtAuthenticationToken authentication) {
-            UUID userId = authenticateService.getAuthenticatedUserPublicId(authentication);
+            Optional<UUID> publicId = authenticateService.getAuthenticatedUserPublicId(authentication);
 
-            if (userId != null) {
-                userService.updateUserLastActivityAt(userId);
-            }
+            publicId.ifPresent(userService::updateUserLastActivityAt);
         }
 
         filterChain.doFilter(request, response);

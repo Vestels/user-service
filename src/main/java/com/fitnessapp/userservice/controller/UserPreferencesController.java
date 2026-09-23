@@ -35,7 +35,7 @@ public class UserPreferencesController {
 
         userPreferencesService.updateUserPreferences(
                 request,
-                authenticateService.getAuthenticatedUserPublicId(authentication)
+                authenticateService.requireAuthenticatedUserPublicId(authentication)
         );
     }
 }

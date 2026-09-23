@@ -1,6 +1,6 @@
 package com.fitnessapp.userservice.service.support;
 
-import com.fitnessapp.userservice.dto.response.Auth0UserResponseDto;
+import com.fitnessapp.userservice.dto.security.Auth0UserResponseDto;
 import com.fitnessapp.userservice.dto.security.Auth0UserInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

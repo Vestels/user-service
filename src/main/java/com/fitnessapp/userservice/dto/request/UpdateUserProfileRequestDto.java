@@ -22,6 +22,7 @@ public record UpdateUserProfileRequestDto(
 
         Gender gender
 ) {
+
     public boolean isEmpty() {
         return firstName == null
                 && lastName == null
