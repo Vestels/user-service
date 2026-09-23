@@ -34,6 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/deletion/cancel")
+    @ResponseStatus(HttpStatus.OK)
     public void clearUserScheduledDeletion(Authentication authentication) {
         userService.clearUserScheduledDeletion(authenticateService.requireAuthenticatedUserPublicId(authentication));
     }
