@@ -1,0 +1,107 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.8.2
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12.6.0
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install release tooling
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for changesets
+        id: changesets
+        shell: bash
+        run: |
+          if find .changeset -maxdepth 1 -type f -name '*.md' ! -name 'README.md' | grep -q .; then
+            echo "has_changesets=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changesets=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure Git
+        if: steps.changesets.outputs.has_changesets == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Update version and changelog
+        if: steps.changesets.outputs.has_changesets == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          HUSKY: "0"
+        run: pnpm changeset version
+
+      - name: Update Maven version
+        if: steps.changesets.outputs.has_changesets == 'true'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          ./mvnw versions:set -DnewVersion="$VERSION-SNAPSHOT" -DgenerateBackupPoms=false
+
+      - name: Commit version changes
+        if: steps.changesets.outputs.has_changesets == 'true'
+        env:
+          HUSKY: "0"
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          git add .
+          git commit -m "chore(release): [ v${VERSION}-SNAPSHOT ]"
+
+      - name: Create tag
+        if: steps.changesets.outputs.has_changesets == 'true'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          git tag "v${VERSION}-SNAPSHOT"
+
+      - name: Push commit and tag
+        if: steps.changesets.outputs.has_changesets == 'true'
+        run: |
+          git push origin develop
+          git push origin --tags
+
+      - name: Create GitHub Release
+        if: steps.changesets.outputs.has_changesets == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          gh release create "v${VERSION}-SNAPSHOT" \
+            --title "v${VERSION}-SNAPSHOT" \
+            --generate-notes
